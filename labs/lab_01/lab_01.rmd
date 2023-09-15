@@ -1,0 +1,96 @@
+---
+title: "lab_01"
+author: "Derek Willis"
+date: "2023-01-05"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Turn off scientific notation
+options(scipen=999)
+```
+
+## About this lab
+
+To complete this lab, you need to: \* run existing code as directed (look for **Task**). \* modify existing code as directed (look for **Task**). \* write code in empty codeblocks provided to answer questions included (look for **Q**). \* write out the answer in the form of a complete sentence in the space given (look for **A**). When you are finished, commit changes and push to your personal GitHub repo, then submit the URL to this document on ELMS.
+
+Remember to add any new verbs or concepts to your class reference notebook!
+
+## Load libraries and establish settings
+
+**Task** Run the codeblock below to load the Tidyverse. To run the codeblock, hit the little green play button in the upper right corner of the gray area (the codeblock) below.
+
+```{r}
+# Load the tidyverse. If you have not installed the tidyverse already, remove the # from the next line and run it first.  
+# install.packages('tidyverse')
+library(tidyverse)
+```
+
+## Load Data
+
+We're going to load the UMD courses data.
+
+**Task** Run the codeblock below to load the data, which is contained in an RDS file.
+
+```{r}
+umd_courses <- read_rds("lab_01.rds")
+```
+
+## Answer questions
+
+**Q1** Which department has the highest mean (average) number of seats for its classes? You need to show the department with the highest average first. Which one is the most surprising/interesting to you?
+
+**A1: The Cooperative Education Engineering has the highest average number of seats at 306.67. One that I found pretty surprising is Biology at only an average of 7.97, for I thought most of the classes in that department were large lecture hall-style classes.**
+
+```{r}
+umd_courses |>
+  group_by(department) |>
+  summarise(
+    mean_seats = mean(seats)
+  ) |>
+  arrange(desc(mean_seats))
+```
+
+**Q2** Find out the greatest number of times any individual class has been offered in our dataset. Your code must show the greatest number of classes first.
+
+**A2: The greatest number of times a class has been offered in this dataset is 22.**
+
+```{r}
+umd_courses |>
+  group_by(id) |>
+  summarise(
+    count = n()
+  ) |>
+  arrange(desc(count))
+```
+
+**Q3** Count the number of courses for each instructor and department. Which instructor has taught the most?
+
+**A3: Keith Yearwood of the Geographical Sciences department has taught the most, with a total of 61 classes.**
+
+```{r}
+umd_courses |>
+  group_by(instructors, department) |>
+  summarise(
+    count = n()
+  ) |>
+  arrange(desc(count))
+```
+
+**Q4** Given the results for Q3, what would have made it easier to find the answer? You don't have to know *how* to accomplish this; I want you to describe in words what would make the answer easier to see. How confident are you that the answer you got is the right one, and why?
+
+**A4: It would have been easier to find the answer if I had filtered to remove all results where the instructors entry is blank, aka where it says "NA," since there are a lot of results in the list like that. I got my answer by finding the first entry in my summary that did not say either "NA" or "Instructor: TBA," and while I am confident in my answer, the fact that I had to scroll through multiple pages of results to find that answer means there was a lot of room for human error.**
+
+**Q5** Take one of the questions you listed in the final question of the pre_lab and try to answer it here in code. If you don't know how to fully answer it, write what code you can and describe in words what else you would need to do. If you got an answer, is it interesting?
+
+**A5: One of the questions I asked is as follows: Which departments have the largest number of classes? The answer is that Business and Management generally seems to have the highest number of classes per term, with the School of Music, Communication, and English also appearing pretty high in the list. I grouped by both department and term since if I purely the total number of classes that has ever been offered by a department, I would have needed to filter out the duplicates of the class ids that exist for the classes that have been offered for more than one term. My question was fairly vague, but I could have easily done more filtering if I wanted to answer a more specific answer, such as which department offered the most classes during a specific term or what the average number of classes per department is. The answer is interesting but not surprising, for we do have quite a bug business program, and it makes sense that a department such as the School of Music would offer so many different classes considering how many small ensembles exist.**
+
+```{r}
+umd_courses |>
+  group_by(department, term) |>
+  summarise(
+    count = n()
+  ) |>
+  arrange(desc(count))
+```
