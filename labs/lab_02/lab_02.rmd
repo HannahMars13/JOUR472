@@ -44,7 +44,9 @@ climate_courses <- umd_courses |>
   arrange(desc(classes))
 ```
 
-**Q2.** Of the departments listed in A1, which one is the most interesting to you, and why? **A2. Germanic Studies is the most interesting department listed since I would not have expected those two topics to overlap at all. I would be interested in finding out how a class on Germanic Studies could tie the study of climate into the curriculum.**
+**Q2.** Of the departments listed in A1, which one is the most interesting to you, and why?
+
+**A2. Germanic Studies is the most interesting department listed since I would not have expected those two topics to overlap at all. I would be interested in finding out how a class on Germanic Studies could tie the study of climate into the curriculum.**
 
 **Q3** Which departments have the most courses in the Fall 2023 term? And which departments in that term have at least one syllabus posted? How are the top five departments different in each result?
 
