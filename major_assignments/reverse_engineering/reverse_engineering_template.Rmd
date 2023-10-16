@@ -1,6 +1,6 @@
 ---
 title: "Reverse Engineering Project"
-author: "Student names here"
+author: "Sasha Allen, Nick Elliot, Hannah Marszalek, Bode Ramsay"
 date: "Date here"
 output:
   html_document:
