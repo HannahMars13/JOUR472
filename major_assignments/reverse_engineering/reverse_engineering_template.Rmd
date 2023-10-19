@@ -41,7 +41,8 @@ homicide_data <- read_csv("data/homicide-data.csv")
 
 # Clean required data and prepare for analysis if needed. 
 homicide_data <- homicide_data %>%
-  mutate(fixed_date = ymd(reported_date))
+  mutate(fixed_date = ymd(reported_date), 
+         year = year(fixed_date))
 
 ```
 
@@ -51,14 +52,13 @@ In this notebook, we are reverse engineering five sentences from the story.
 
 ### Sentence 1
 
--   **Sentence text:** \"As Baltimore has seen a stunning surge of violence, with nearly a killing each day for the past three years in a city of 600,000, homicide arrests have plummeted.\"
--   **Analysis summary**: By filtering for only the killings that happened in 2015, 2016, or 2017 in Baltimore and then grouping by year, we were able to see that the total number per year was pretty close to 365, thus confirming their claim that there was nearly a killing each day. We also added a column showing the percent of the year for which there was a killing per day, thus further confirming this.
+-   **Sentence text:** "As Baltimore has seen a stunning surge of violence, with nearly a killing each day for the past three years in a city of 600,000, homicide arrests have plummeted."
+-   **Analysis summary:** By filtering for only the killings that happened in 2015, 2016, or 2017 in Baltimore and then grouping by year, we were able to see that the total number per year was pretty close to 365, thus confirming their claim that there was nearly a killing each day. We also added a column showing the percent of the year for which there was a killing per day, thus further confirming this.
 
 ```{r}
 # Put code to reverse engineer sentence here
 past_three_years <- homicide_data %>%
   filter(city == "Baltimore") %>%
-  mutate(year = year(fixed_date)) %>%
   filter(year == "2015" | year == "2016" | year == "2017") %>%
   group_by(year) %>%
   summarise(
@@ -72,31 +72,60 @@ past_three_years
 
 ### Sentence 2
 
--   **Sentence text:** \"Of 50 of the nation\'s largest cities, Baltimore is one of 34 where police now make homicide arrests less often than in 2014, according to a Washington Post analysis. In Chicago, the homicide arrest rate has dropped 21 percentage points, in Boston it has dropped 12 points and in St. Louis it is down 9.\"
--   **Analysis summary**: [Write up two to three sentences describing the results of your analysis. Were you able to confirm the finding? If not, why not?]
+-   **Sentence text:** "Of 50 of the nation's largest cities, Baltimore is one of 34 where police now make homicide arrests less often than in 2014, according to a Washington Post analysis."
+-   **Analysis summary:** To do our analysis, we found the number of homicide arrests per city in 2014 and then in 2017, then joined these data frames to compare the numbers. Using percent change, we could determine that the cities with a negative percent change were the ones where the number of homicide arrests decreased. We were not quite able to prove the truth of this sentence since the list we created only had 24 cities and Baltimore was not on the list, and it does seem as though certain cities do not have complete data for every year. Therefore, we will likely have to change our analysis approach.
 
 ```{r}
 # Put code to reverse engineer sentence here
+arrests_2014 <- homicide_data %>%
+  filter(year == "2014" & disposition == "Closed by arrest") %>%
+  group_by(city) %>%
+  summarize(arrests_2014 = n())
+
+arrests_2017 <- homicide_data %>%
+  filter(year == "2017" & disposition == "Closed by arrest") %>%
+  group_by(city) %>%
+  summarize(arrests_2017 = n())
+
+homicide_arrests <- arrests_2014 %>%
+  left_join(arrests_2017) %>%
+  mutate(pct_change = (arrests_2017 - arrests_2014)/arrests_2014) %>%
+  filter(pct_change < 0)
 
 # Display results of code below this codeblock
-
+homicide_arrests
 ```
 
 ### Sentence 3
 
--   **Sentence text:** \"Baltimore is also one of 30 cities that have seen an increase in homicides in recent years, with the greatest raw number increase in killings of any city other than Chicago, which has four times the population. While homicide rates remain near historical lows in most American cities, Baltimore and Chicago are now both seeing murder tallies that rival the early 2000s.\"
--   **Analysis summary**: [Write up two to three sentences describing the results of your analysis. Were you able to confirm the finding? If not, why not?]
+-   **Sentence text:** "Baltimore is also one of 30 cities that have seen an increase in homicides in recent years, with the greatest raw number increase in killings of any city other than Chicago, which has four times the population."
+-   **Analysis summary:** While it is not completely clear from the sentence in the article what the Washington Post counted as "recent years," we decided to compare the number of killings per city in 2012 and 2017. Upon calculating the difference for each city, we found that the top three cities as far as increases in homicides are Chicago, Las Vegas, and Baltimore. This is slightly difference from the results described in the story since they said Baltimore was second to Chicago, which means their definition of "recent years" may have been different from ours.
 
 ```{r}
 # Put code to reverse engineer sentence here
+homicide_count_2012 <- homicide_data %>%
+  filter(year == "2012") %>%
+  group_by(city) %>%
+  summarize(homicide_count_2012 = n())
+
+homicide_count_2017 <- homicide_data %>%
+  filter(year == "2017") %>%
+  group_by(city) %>%
+  summarize(homicide_count_2017 = n())
+
+homicide_data_combined <- homicide_count_2017 %>%
+  left_join(homicide_count_2012) %>%
+  filter(city != "New York") %>%
+  mutate(raw_number_increase = homicide_count_2017 - homicide_count_2012) %>%
+  arrange(desc(raw_number_increase))
 
 # Display results of code below this codeblock
-
+homicide_data_combined
 ```
 
 ### Sentence 4
 
--   **Sentence text**: \"For most of the decade before 2015, Baltimore\'s annual homicide arrest rate hovered at about 40 percent. Since 2015, the arrest rate hasn\'t topped 30 percent in any year. And while most cities saw their arrest rates drop gradually, Baltimore\'s decline was sudden --- plummeting 15 percentage points in 2015, after Gray\'s death, the largest single-year drop for any city already solving less than half its homicides.\"
+-   **Sentence text**: "For most of the decade before 2015, Baltimore's annual homicide arrest rate hovered at about 40 percent. Since 2015, the arrest rate hasn't topped 30 percent in any year. And while most cities saw their arrest rates drop gradually, Baltimore's decline was sudden --- plummeting 15 percentage points in 2015, after Gray's death, the largest single-year drop for any city already solving less than half its homicides."
 -   **Analysis summary**: [Write up two to three sentences describing the results of your analysis. Were you able to confirm the finding? If not, why not?]
 
 ```{r}
@@ -108,7 +137,7 @@ past_three_years
 
 ### Sentence 5
 
--   **Sentence text:** \"Homicides have soared in several neighborhoods since Gray\'s death. Sandtown-Winchester, where Gray died, has seen 22 more homicides in the three-year period since Gray\'s death than it did in the three years before he died. Southwest Baltimore saw its homicides rise by 35, and Greater Rosemont has seen 26 more since 2015.\"
+-   **Sentence text:** "Homicides have soared in several neighborhoods since Gray's death. Sandtown-Winchester, where Gray died, has seen 22 more homicides in the three-year period since Gray's death than it did in the three years before he died. Southwest Baltimore saw its homicides rise by 35, and Greater Rosemont has seen 26 more since 2015."
 -   **Analysis summary**: [Write up two to three sentences describing the results of your analysis. Were you able to confirm the finding? If not, why not?]
 
 ```{r}
