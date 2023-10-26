@@ -59,7 +59,7 @@ In this notebook, we are reverse engineering five sentences from the story.
 # Put code to reverse engineer sentence here
 past_three_years <- homicide_data %>%
   filter(city == "Baltimore") %>%
-  filter(year == "2015" | year == "2016" | year == "2017") %>%
+  filter(year == "2012" | year == "2013" | year == "2014" | year == "2015" | year == "2016" | year == "2017") %>%
   group_by(year) %>%
   summarise(
     total_killings = n(),
@@ -125,11 +125,25 @@ homicide_data_combined
 
 ### Sentence 4
 
--   **Sentence text**: "For most of the decade before 2015, Baltimore's annual homicide arrest rate hovered at about 40 percent. Since 2015, the arrest rate hasn't topped 30 percent in any year. And while most cities saw their arrest rates drop gradually, Baltimore's decline was sudden --- plummeting 15 percentage points in 2015, after Gray's death, the largest single-year drop for any city already solving less than half its homicides."
+-   **Sentence text**: "For most of the decade before 2015, Baltimore's annual homicide arrest rate hovered at about 40 percent. Since 2015, the arrest rate hasn't topped 30 percent in any year."
 -   **Analysis summary**: [Write up two to three sentences describing the results of your analysis. Were you able to confirm the finding? If not, why not?]
 
 ```{r}
 # Put code to reverse engineer sentence here
+baltimore_arrests_by_year <- homicide_data %>%
+  filter(city == "Baltimore") %>%
+  filter(disposition == "Closed by arrest") %>%
+  group_by(year) %>%
+  summarize(arrests = n())
+
+baltimore_homicides_by_year <- homicide_data %>%
+  filter(city == "Baltimore") %>%
+  group_by(year) %>%
+  summarize(homicides = n())
+
+baltimore_arrest_rate <- baltimore_arrests_by_year %>%
+  left_join(baltimore_homicides_by_year, by = "year") %>%
+  mutate(arrest_rate = (arrests/homicides)*100)
 
 # Display results of code below this codeblock
 
