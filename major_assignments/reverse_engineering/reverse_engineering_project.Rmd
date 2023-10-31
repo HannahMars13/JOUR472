@@ -27,6 +27,7 @@ Loading required libraries for this analysis.
 ```{r echo=FALSE, message=FALSE}
 library(tidyverse)
 library(lubridate)
+library(ggplot2)
 ```
 
 ## Load and Cleaning Data
@@ -57,17 +58,32 @@ In this notebook, we are reverse engineering five sentences from the story.
 
 ```{r}
 # Put code to reverse engineer sentence here
-past_three_years <- homicide_data %>%
+past_years <- homicide_data %>%
   filter(city == "Baltimore") %>%
   filter(year == "2012" | year == "2013" | year == "2014" | year == "2015" | year == "2016" | year == "2017") %>%
   group_by(year) %>%
   summarise(
     total_killings = n(),
-    percent_of_year = total_killings/365 * 100
+    avg_per_day = total_killings/365
   )
   
 # Display results of code below this codeblock
-past_three_years
+past_years
+```
+
+```{r}
+# Sentence 1 Visualization
+past_years %>%
+  ggplot() +
+  geom_bar(aes(x=year, weight=total_killings)) +
+  scale_x_continuous(breaks=c(2012, 2013, 2014, 2015, 2016, 2017)) +
+  labs(
+    title="Total Homicides Per Year in Baltimore",
+    x = "year",
+    y = "number of homicides",
+    caption = "source: The Washington Post"
+    ) +
+  theme_clean()
 ```
 
 ### Sentence 2
