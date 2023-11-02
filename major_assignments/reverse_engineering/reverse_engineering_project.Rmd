@@ -34,7 +34,7 @@ library(ggthemes)
 
 ## Load and Cleaning Data
 
-This homicide data comes from [The Washington Post's Github page](https://github.com/washingtonpost/data-homicides), and it includes data from 50 police departments that were chosen based on their city's size and violent crime reported to the FBI in 2012. The file includes information regarding when the homicide was reported, where it took place, the status of the case, and some basic demographic information about the victim. While most departments provided information from a full decade (2007-2017), New York City only provided two years, which made some of our analysis a bit more challenging.
+This homicide data comes from [The Washington Post's Github page](https://github.com/washingtonpost/data-homicides), and it includes data from 50 police departments that were chosen based on their city's size and violent crime reported to the FBI in 2012. The file they provided includes information regarding when the homicide was reported, where it took place, the status of the case, and some basic demographic information about the victim. While most departments provided information from a full decade (2007-2017), New York City only provided two years, which made some of our analysis a bit more challenging.
 
 ```{r}
 #Loading homicide data from The Washington Post
@@ -51,10 +51,10 @@ homicide_data <- homicide_data %>%
 ### Sentence 1
 
 -   **Sentence text:** "As Baltimore has seen a stunning surge of violence, with nearly a killing each day for the past three years in a city of 600,000, homicide arrests have plummeted."
--   **Analysis summary:** By filtering for only the killings that happened in 2015, 2016, or 2017 in Baltimore and then grouping by year, we were able to see that the total number per year was fairly close to 365 for 2015, 2016, and 2017, thus confirming their claim that there was nearly a killing each day. We also added a column showing the average number of killings per day, all of which were above 0.5, to further prove this. By including some of the years before this three-day period, we were also able to demonstrate how there has been a surge in the numbers, going from 0.59 per day in 2012 to 0.93 per day in 2017.
+-   **Analysis summary:** By filtering for only the killings that happened in the latter half of the provided decade in Baltimore and then grouping by year, we were able to see that the total number per year was fairly close to 365 for 2015, 2016, and 2017, thus confirming their claim that there was nearly a killing each day. We also added a column showing the average number of killings per day, all of which were above 0.5, to further prove this. By including some of the years before this three-day period, we were also able to demonstrate how there has been a surge in the numbers, going from 0.59 per day in 2012 to 0.93 per day in 2017.
 
 ```{r}
-# Put code to reverse engineer sentence here
+#Filtering for Baltimore and the specific years and creating a new column with daily average
 past_years <- homicide_data %>%
   filter(city == "Baltimore") %>%
   filter(year == "2012" | year == "2013" | year == "2014" | year == "2015" | year == "2016" | year == "2017") %>%
@@ -64,7 +64,7 @@ past_years <- homicide_data %>%
     avg_per_day = total_killings/365
   )
   
-#Displaying resulting table
+#Displaying the resulting table
 past_years
 ```
 
@@ -107,7 +107,7 @@ homicide_arrests <- arrests_2014 %>%
   mutate(pct_change = (arrests_2017 - arrests_2014)/arrests_2014) %>%
   filter(pct_change < 0)
 
-#Displaying resulting table
+#Displaying the resulting table
 homicide_arrests
 ```
 
@@ -137,7 +137,7 @@ homicide_data_combined <- homicide_count_2017 %>%
   filter(raw_number_increase > 0) %>%
   arrange(desc(raw_number_increase))
 
-# Displaying resulting table
+# Displaying the resulting table
 homicide_data_combined
 ```
 
@@ -165,14 +165,14 @@ baltimore_arrest_rate <- baltimore_arrests_by_year %>%
   left_join(baltimore_homicides_by_year, by = "year") %>%
   mutate(arrest_rate = (arrests/homicides)*100)
 
-#Displaying resulting table
+#Displaying the resulting table
 baltimore_arrest_rate
 ```
 
 ### Sentence 5
 
 -   **Sentence text:** "Of the 1,002 homicides between 2015 and the beginning of this year, just 252 --- one out of every four --- resulted in an arrest."
--   **Analysis summary**: As shown in our analysis, the first dataset containing the number of cases during this time has 1,002 cases shown by the number of rows and the second dataset showing the number of cases closed by arrest has 252 rows. Each of these numbers are exactly correct compared to the numbers used in the story. Also, regarding their claim that one out of every four homicides resulted in arrested, we were able to confirm this by calculating the percent using the number of rows in each of these dataframes and multiplying it by 100. The resulting number was 25.15, which therefor proves their point since 25% is the same as 1/4.
+-   **Analysis summary**: As shown in our analysis, the first dataset containing the number of cases during this time has 1,002 cases shown by the number of rows, and the second dataset showing the number of cases closed by arrest has 252 rows. Each of these numbers are exactly correct compared to the numbers used in the story. Also, regarding their claim that one out of every four homicides resulted in an arrest, we were able to confirm this by calculating the percent using the number of rows in each of these dataframes and multiplying it by 100. The resulting number was 25.15, which therefore proves their point since 25% is the same as 1/4.
 
 ```{r}
 #Filtering for only homicides in Baltimore from 2015 to 2017
