@@ -105,11 +105,16 @@ moco_join_pop_calls <- moco_join_pop_calls %>%
 
 **Q4** Using [CensusReporter.org](https://censusreporter.org/), examine the zip codes with the highest and lowest rates and compare and contrast their demographic profiles. Is there a story here?
 
-**A4**
+**A4. Both zip codes have a very similar median age at 37.6 and 38, and their divide by gender is very similar. The poverty level in 20707 is lower than in 20877 by 7%, with 8.4% and 15.4% of people living below the poverty line, respectively. 20707 has the highest percent of Black people at 45%, while 20877 has the highest percent of Hispanic people at 42%.**
 
 **Q5** Go back to your joined dataframe from Q3 and add two more columns representing the minimum and maximum populations based on the estimate and margin of error, then calculate per capita rates for each. Do you get the same two zip codes for the highest and lowest as you did before? Does that give you more or less confidence in your answers to Q3?
 
-**A5**
+**A5. I did get get the same two zip codes of 20877 and 20707 after doing this, which gives me more confidence in my previous answer.**
 
 ```{r}
+moco_join_pop_calls <- moco_join_pop_calls %>%
+  mutate(min_pop = estimate - moe,
+         max_pop = estimate + moe) %>%
+  mutate(min_rate_per_1k = (count/min_pop)*1000,
+         max_rate_per_1k = (count/max_pop)*1000)
 ```

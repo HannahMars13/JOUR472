@@ -18,7 +18,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Introduction
 
-In this notebook, we are reverse engineering the story, ["As police struggle to solve homicides, Baltimore residents see an \'open season for killing\'"](https://www.washingtonpost.com/investigations/as-police-struggle-to-solve-homicides-baltimore-residents-see-an-open-season-for-killing/2018/12/26/7ee561e4-fb24-11e8-8c9a-860ce2a8148f_story.html) from *The Washington Post*. We have chosen five sentences from the story that we felt revealed a reliance on data analysis and have recreated that analysis with our own code. Those sentences and our analysis can be found below.
+In this notebook, we are reverse engineering the story, ["As police struggle to solve homicides, Baltimore residents see an 'open season for killing'"](https://www.washingtonpost.com/investigations/as-police-struggle-to-solve-homicides-baltimore-residents-see-an-open-season-for-killing/2018/12/26/7ee561e4-fb24-11e8-8c9a-860ce2a8148f_story.html) from *The Washington Post*. We have chosen five sentences from the story that we felt revealed a reliance on data analysis and have recreated that analysis with our own code. Those sentences and our analysis can be found below.
 
 ## Load libraries
 
