@@ -50,7 +50,7 @@ pg_calls <- pg_calls %>%
 
 Compare the results here to those from the pre_lab_08 bar chart - are there major differences in the months with the highest and lowest figures? Describe that below.
 
-**A1.** There do seem to be some significant differences between this bar chart and the one from the prelab, for many of the months seem to be flipped. While in the prelab August had the highest number of calls, in this chart August is third from the bottom. Similarly, in the prelab December was the second from the bottom, whereas it is the months with the highest amount of calls in the lab.
+**A1. There do seem to be some significant differences between this bar chart and the one from the prelab, for many of the months seem to be flipped. While in the prelab August had the highest number of calls, in this chart August is third from the bottom. Similarly, in the prelab December was the second from the bottom, whereas it is the months with the highest amount of calls in the lab.**
 
 ```{r}
 pct_by_month <- pg_calls 
@@ -85,7 +85,7 @@ pct_by_month %>%
 
 Describe the pattern of results; you may want to look at the data to dig into particular outliers.
 
-**A2.**
+**A2. This graph includes a fair amount of spikes and drops, with no clear pattern being visible. The highest spike is in week 28 with 41 calls, and at the very end it dips quite a lot with only 4 calls in week 53. The percent of total calls mostly stays in the range of 1.2 to 2.0, and the spikes are when it gets as high as 2.2 to 2.9.**
 
 ```{r}
 pct_by_week <- pg_calls %>%
@@ -130,8 +130,26 @@ To answer this question, do the following:
 6.  Add a label for each point that shows the zip code using geom_text() - see some examples of its use at <https://ggplot2.tidyverse.org/reference/geom_text.html#ref-examples>. Try to make the names as easy to read as possible by avoiding overlap.
 7.  In the answer space below, describe what you see and answer the questions posed above. In a general sense, what do you think this means? Feel free to consider the actual raw values: how would you report out the main point(s) of this chart?
 
-**A3.**
+**A3. From looking at this graph, there foes appear to be some relationship between a zip code's median income and the number of overdoses calls. While this is not the case for every zip code, some of the zip codes with the highest median incomes, such as 20769 and 2062, have less than five reported calls. The zip codes with the most calls, 20745 and 20743, are both below \$70,000 for median income, putting them in the lowest quarter of the data as far as median income.**
 
 ```{r}
+pg_calls_zip <- pg_calls %>%
+  group_by(zipcode) %>%
+  summarize(calls = n())
+
 md_median_income_zip <- get_acs(geography = "zcta", variables = "B19013_001", state = "MD", year = 2019)
+
+pg_join_income_calls <- pg_calls_zip %>%
+  inner_join(md_median_income_zip, by = c("zipcode" = "GEOID"))
+
+ggplot(pg_join_income_calls, aes(x=calls, y=estimate, label=zipcode)) +
+  geom_point() +
+  geom_text(hjust = 0, nudge_x = 0.05, check_overlap = TRUE) + 
+  labs(
+    title = "911 Overdose Calls in Prince George's County by Median Household Income",
+    x = "number of overdose calls", 
+    y = "median household income",
+    caption = "Source: Prince George's County EMS, Census Bureau"
+  ) +
+  theme_minimal()
 ```
