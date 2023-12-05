@@ -1,0 +1,108 @@
+---
+title: "Data Analysis Project"
+author: "Hannah Marszalek"
+date: "2023-11-30"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Load libraries
+
+```{r}
+library(tidyverse)
+library(janitor)
+```
+
+### Load data
+
+This data had already been cleaned when we began working with it, so there was not much to do as far as that.
+
+```{r}
+roster_2020_21 <- read_csv("data/wbb_rosters_2020_21.csv")
+roster_2021_22 <- read_csv("data/wbb_rosters_2021_22.csv")
+roster_2022_23 <- read_csv("data/wbb_rosters_2022_23.csv")
+roster_2023_24 <- read_csv("data/wbb_rosters_2023_24.csv")
+old_years_cleaned <- read_csv("data/years_cleaned.csv")
+years_cleaned <- old_years_cleaned |>
+  group_by(`year-clean`) |> 
+  summarize(sum(count, na.rm = TRUE))
+```
+
+**Question 1:** What states produce the most women's basketball players?
+
+**Summary:** As far as the total number of players over the course of the four seasons, Pennsylvania, Texas and New York have the highest numbers. We also looked at the percent change in the numbers of players between 2020 and 2023, which was interesting because Pennsylvania had a change that was less than 1%, showing how they have stayed consistently near the top of the list in terms of how many players they produce. The total is not the most perfect considering it does not account for the fact that there may be duplicate players between some of the years.
+
+```{r}
+state_counts_2020 <- roster_2020_21 |>
+  group_by(state_clean) |>
+  summarize(count_2020 = n()) |>
+  na.omit()
+
+state_counts_2021 <- roster_2021_22 |>
+  group_by(state_clean) |>
+  summarize(count_2021 = n()) |>
+  na.omit()
+
+state_counts_2022 <- roster_2022_23 |>
+  group_by(state_clean) |>
+  summarize(count_2022 = n()) |>
+  na.omit() |>
+  filter(state_clean != "USVI")
+
+state_counts_2023 <- roster_2023_24 |>
+  group_by(state_clean) |>
+  summarize(count_2023 = n()) |>
+  na.omit()
+
+all_years_state_counts <- state_counts_2020 |>
+  left_join(state_counts_2021, by = "state_clean") |>
+  left_join(state_counts_2022, by = "state_clean") |>
+  left_join(state_counts_2023, by = "state_clean") |>
+  mutate(total_players = count_2020 + count_2021 + count_2022 + count_2023) |>
+  mutate(pct_change = ((count_2023 - count_2020)/count_2020)*100) |>
+  arrange(desc(total_players))
+
+all_years_state_counts
+```
+
+**Question 2:** Which power 5 conferences have the tallest teams for the current season?
+
+**Summary:** For this question, we looked at the most recent roster data and filtered for only players from the power 5 conferences: SEC, ACC, Big Ten, Big 12, Pac-12. We then grouped by team and found the average height for each team, which showed us that Texas has the highest average height for the 2023-24 season at 73.33 inches. UCLA and Indiana are the second and third tallest teams.
+
+```{r}
+tallest_teams_2023 <- roster_2023_24 |>
+  filter(conference == "SEC" | conference == "Big Ten" | conference == "ACC" | conference == "Big 12" | conference == "Pac-12") |>
+  group_by(team) |>
+  summarise(
+    avg_height = mean(total_inches)) |>
+  arrange(desc(avg_height))
+
+tallest_teams_2023
+```
+
+**Question 3:** What is the percentage of freshmen, sophomores, juniors, seniors, redshirts, and grad students per each D1 team and how has it changed over time?
+
+**Summary:**
+
+```{r}
+
+```
+
+**Question 4:** What school took in the most transfers? What school had the most players transfer out?
+
+**Summary:**
+
+```{r}
+
+```
+
+**Question 5:** Which teams have the most in-state players?
+
+**Summary:**
+
+```{r}
+
+```
