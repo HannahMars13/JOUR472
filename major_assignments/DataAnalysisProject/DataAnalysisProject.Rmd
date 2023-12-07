@@ -9,6 +9,10 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+**Deliverable 3 Summary:** So far, we have done analysis on the states that produce the most women's basketball players and the power 5 conference teams with the tallest teams for the current season. We found that Pennsylvania, Texas, and New York are the three states leading in terms of the number of players they produce. While Pennsylvania is not in the top slot for all four years we looked at, it is the state with the largest total overall and has a very low percent change between 2020 and 2023. Guam and the Virgin Islands have the lowest counts, which is not surprising considering these are small territories. In terms of our question on average height, the top five power 5 conference teams for this year are Texas, UCLA, Indiana, South Carolina, and Michigan.
+
+Our most newsworthy finding so far is that many of the leaders in terms of average height are also at the top of the list for most rebounds per game, as we found here: <https://www.ncaa.com/stats/basketball-women/d1/current/team/1015>. South Carolina is currently number one, and UCLA and Texas are both in the top 20. While all 64 teams within the five conferences had average heights that were between the small margin of 69 and 74 inches, this does suggest that even a few inches may make a big difference in this regard. We will continue to explore this more and also consider other team statistics that can be found on the NCAA's website.
+
 ### Load libraries
 
 ```{r}
@@ -18,7 +22,7 @@ library(janitor)
 
 ### Load data
 
-This data had already been cleaned when we began working with it, so there was not much to do as far as that.
+This data had already been cleaned when we began working with it, so there was not much to do in this regard.
 
 ```{r}
 roster_2020_21 <- read_csv("data/wbb_rosters_2020_21.csv")
@@ -33,9 +37,10 @@ years_cleaned <- old_years_cleaned |>
 
 **Question 1:** What states produce the most women's basketball players?
 
-**Summary:** As far as the total number of players over the course of the four seasons, Pennsylvania, Texas and New York have the highest numbers. We also looked at the percent change in the numbers of players between 2020 and 2023, which was interesting because Pennsylvania had a change that was less than 1%, showing how they have stayed consistently near the top of the list in terms of how many players they produce. The total is not the most perfect considering it does not account for the fact that there may be duplicate players between some of the years.
+**Summary:** As far as the total number of players over the course of the four seasons, Pennsylvania, Texas and New York have the highest numbers. We also looked at the percent change in the numbers of players between 2020 and 2023, which was interesting because Pennsylvania had a change that was less than 1%, showing how they have stayed consistently near the top of the list in terms of how many players they produce. One issue that exists with the total is that it does not account for the fact that there may be duplicate players between some of the years, but finding a way to fix this may be quite challenging.
 
 ```{r}
+#create player counts by state for each year
 state_counts_2020 <- roster_2020_21 |>
   group_by(state_clean) |>
   summarize(count_2020 = n()) |>
@@ -57,6 +62,8 @@ state_counts_2023 <- roster_2023_24 |>
   summarize(count_2023 = n()) |>
   na.omit()
 
+#combine all years to see total counts
+#calculate percent change between 2020 and 2023 for each state
 all_years_state_counts <- state_counts_2020 |>
   left_join(state_counts_2021, by = "state_clean") |>
   left_join(state_counts_2022, by = "state_clean") |>
@@ -70,9 +77,11 @@ all_years_state_counts
 
 **Question 2:** Which power 5 conferences have the tallest teams for the current season?
 
-**Summary:** For this question, we looked at the most recent roster data and filtered for only players from the power 5 conferences: SEC, ACC, Big Ten, Big 12, Pac-12. We then grouped by team and found the average height for each team, which showed us that Texas has the highest average height for the 2023-24 season at 73.33 inches. UCLA and Indiana are the second and third tallest teams.
+**Summary:** For this question, we looked at the most recent roster data and filtered for only players from the power 5 conferences: SEC, ACC, Big Ten, Big 12, and Pac-12. We then grouped by team and found the average height for each team, which showed us that Texas has the highest average height for the 2023-24 season at 73.33 inches. UCLA and Indiana are the second and third tallest teams, and Clemson is the shortest at 69.93.
 
 ```{r}
+#filter for only the power 5 conferences
+#create a column to calculate average height per team
 tallest_teams_2023 <- roster_2023_24 |>
   filter(conference == "SEC" | conference == "Big Ten" | conference == "ACC" | conference == "Big 12" | conference == "Pac-12") |>
   group_by(team) |>
@@ -83,11 +92,16 @@ tallest_teams_2023 <- roster_2023_24 |>
 tallest_teams_2023
 ```
 
-**Question 3:** What is the percentage of freshmen, sophomores, juniors, seniors, redshirts, and grad students per each D1 team and how has it changed over time?
+**Question 3:** What is the percentage of freshmen, sophomores, juniors, seniors, redshirts, and grad students per each team and how has it changed over time?
 
 **Summary:**
 
 ```{r}
+#create a dataframe with the team, year, and redshirt columns, then group by team and reshirts to find a count of each year
+
+#mutate a total column as well as percent columns
+
+#look at each year separately and potentially combine to see change over time
 
 ```
 
@@ -96,6 +110,11 @@ tallest_teams_2023
 **Summary:**
 
 ```{r}
+#filter for only the players with something in the previous_school column
+
+#create two different dataframes: one grouped by team and one grouped by previous_school
+
+#potentially pull in external transfer data to create a more comprehensive list
 
 ```
 
@@ -104,5 +123,10 @@ tallest_teams_2023
 **Summary:**
 
 ```{r}
+#create a column that checks if the state column for the team and the state column for the player's home state match
+
+#filter for only the players that had a match
+
+#group by team and count
 
 ```
