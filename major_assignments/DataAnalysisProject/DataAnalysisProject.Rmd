@@ -29,6 +29,15 @@ roster_2020_21 <- read_csv("data/wbb_rosters_2020_21.csv")
 roster_2021_22 <- read_csv("data/wbb_rosters_2021_22.csv")
 roster_2022_23 <- read_csv("data/wbb_rosters_2022_23.csv")
 roster_2023_24 <- read_csv("data/wbb_rosters_2023_24.csv")
+
+#combined dataframe
+all_rosters <- bind_rows(
+  roster_2020_21,
+  roster_2021_22,
+  roster_2022_23,
+  roster_2023_24
+)
+
 old_years_cleaned <- read_csv("data/years_cleaned.csv")
 years_cleaned <- old_years_cleaned |>
   group_by(`year-clean`) |> 
@@ -37,7 +46,7 @@ years_cleaned <- old_years_cleaned |>
 
 **Question 1:** What states produce the most women's basketball players?
 
-**Summary:** As far as the total number of players over the course of the four seasons, Pennsylvania, Texas and New York have the highest numbers. We also looked at the percent change in the numbers of players between 2020 and 2023, which was interesting because Pennsylvania had a change that was less than 1%, showing how they have stayed consistently near the top of the list in terms of how many players they produce. One issue that exists with the total is that it does not account for the fact that there may be duplicate players between some of the years, but finding a way to fix this may be quite challenging.
+**Summary:** As far as the total number of players over the course of the four seasons, Pennsylvania, Texas and New York have the highest numbers. We also looked at the percent change in the numbers of players between 2020 and 2023, which was interesting because Pennsylvania had a change that was less than 1%, showing how they have stayed consistently near the top of the list in terms of how many players they produce. One issue that exists with the total is that it does not account for the fact that there may be duplicate players between some of the years, but finding a way to fix this would be quite challenging. We did try to do this using the all_rosters dataframe, but as we had some issues with cleaning the season column, we found it was easier to calculate the years separately and then join them.
 
 ```{r}
 #create player counts by state for each year
@@ -92,41 +101,81 @@ tallest_teams_2023 <- roster_2023_24 |>
 tallest_teams_2023
 ```
 
-**Question 3:** What is the percentage of freshmen, sophomores, juniors, seniors, redshirts, and grad students per each team and how has it changed over time?
+**Question 3:** What is the breakdown of freshmen, sophomores, juniors, seniors, and grad students per each team? What percentage of each team do redshirts make up?
 
-**Summary:**
+**Summary:** To answer this question, we took the roster from the current season and grouped the different years to see the breakdown by team. We also used the redshirt column to identify the percentage of redshirt players from each team. Two teams have a lineup comprised of more than 60% redshirts, Grand Valley St. and North Carolina Central, both of which have 9 redshirts. Biola has the third highest percentage at 58.8%, but it has the highest raw number of redshirts at 10. Of the list of 932 teams, seven teams are 50% or more composed of redshirts. While this is not a particularly high number of teams, it could be interesting to explore why some teams are more than half redshirts.
 
 ```{r}
-#create a dataframe with the team, year, and redshirt columns, then group by team and reshirts to find a count of each year
+#group the dataframe by team and get a count of each year
+years_2023 <- roster_2023_24 |>
+  select(team, year_clean) |>
+  group_by(team, year_clean) |>
+  count()
+
+years_2023 <- years_2023 |>
+  pivot_wider(names_from = year_clean, values_from = n)
+
+years_2023[is.na(years_2023)] <- 0
+  
+#add a column for redshirts
+redshirts <- roster_2023_24 |>
+  select(team, redshirt) |>
+  filter(redshirt==1) |>
+  group_by(team) |>
+  summarize(redshirts = n())
+
+years_2023 <- years_2023 |>
+  left_join(redshirts, by="team") |>
+  clean_names()
 
 #mutate a total column as well as percent columns
-
-#look at each year separately and potentially combine to see change over time
+years_2023 <- years_2023 |>
+  mutate(total = freshman+graduate_student+junior+senior+sophomore+fifth_year+na+sixth_year) |>
+  mutate(pct_redshirts = (redshirts/total)*100) |>
+  arrange(desc(pct_redshirts))
 
 ```
 
 **Question 4:** What school took in the most transfers? What school had the most players transfer out?
 
-**Summary:**
+**Summary:** Old Dominion and Glenville St. took in the most transfers at 14 each, with three people transferring out of Old Dominion and zero transferring out of Glenville St. Oregon, Arizona, and Blinn College had the most people transfer out, with nine people transferring out of Oregon and eight people each transferring out of Arizona and Blinn College. 806 schools received zero transfers, and 174 schools had zero people transfer out.
 
 ```{r}
 #filter for only the players with something in the previous_school column
+all_transfers_2023 <- roster_2023_24 |>
+  filter(!is.na(previous_school_clean))
 
 #create two different dataframes: one grouped by team and one grouped by previous_school
+current_team_transfers_grouped <- all_transfers_2023 |>
+  group_by(team) |>
+  summarize(transferred_in = n())
 
-#potentially pull in external transfer data to create a more comprehensive list
+previous_school_transfers_grouped <- all_transfers_2023 |>
+  group_by(previous_school_clean) |>
+  summarize(transferred_out = n()) |>
+  rename("team" = previous_school_clean)
+
+#combined the two dataframes
+combined_transfers_2023 <- full_join(current_team_transfers_grouped, previous_school_transfers_grouped, by = "team")
+
+combined_transfers_2023[is.na(combined_transfers_2023)] <- 0
 
 ```
 
 **Question 5:** Which teams have the most in-state players?
 
-**Summary:**
+**Summary:** Looking again at only the rosters from the power-5 conferences, the schools with the most in-state players are Texas, Michigan State, and Minnesota, with nine players at Texas and eight players at both Michigan State and Minnesota. These results are quite interesting considering schools such as NC State, Rutgers, and Oregon State, all of which have a reputation for having a majority of in-state students, have less than three in-state players on their roster for this year. Of the 59 total teams, only 13 have five or more in-state players. This suggests that the teams from these conferences focus largely on out-of-state recruitment.
 
 ```{r}
-#create a column that checks if the state column for the team and the state column for the player's home state match
+#create a dataframe with only the rows where the team state and home state match
+in_state_players <- roster_2023_24 |>
+  filter(team_state == state_clean) 
 
-#filter for only the players that had a match
-
-#group by team and count
+#filter for only the power 5 conferences and group by team to get a count of in state players
+in_state_players <- in_state_players |>
+  filter(conference == "SEC" | conference == "Big Ten" | conference == "ACC" | conference == "Big 12" | conference == "Pac-12") |>
+  group_by(team) |>
+  summarize(count=n()) |>
+  arrange(desc(count))
 
 ```
