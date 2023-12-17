@@ -1,6 +1,6 @@
 ---
 title: "Data Analysis Project"
-author: "Hannah Marszalek"
+author: "Matthew Kiras, Hannah Marszalek, Bode Ramsay, Hayden Sweeney"
 date: "2023-11-30"
 output: html_document
 ---
@@ -9,9 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-**Deliverable 3 Summary:** So far, we have done analysis on the states that produce the most women's basketball players and the power 5 conference teams with the tallest teams for the current season. We found that Pennsylvania, Texas, and New York are the three states leading in terms of the number of players they produce. While Pennsylvania is not in the top slot for all four years we looked at, it is the state with the largest total overall and has a very low percent change between 2020 and 2023. Guam and the Virgin Islands have the lowest counts, which is not surprising considering these are small territories. In terms of our question on average height, the top five power 5 conference teams for this year are Texas, UCLA, Indiana, South Carolina, and Michigan.
-
-Our most newsworthy finding so far is that many of the leaders in terms of average height are also at the top of the list for most rebounds per game, as we found here: <https://www.ncaa.com/stats/basketball-women/d1/current/team/1015>. South Carolina is currently number one, and UCLA and Texas are both in the top 20. While all 64 teams within the five conferences had average heights that were between the small margin of 69 and 74 inches, this does suggest that even a few inches may make a big difference in this regard. We will continue to explore this more and also consider other team statistics that can be found on the NCAA's website.
+**Introduction:** This data notebook was created to analyze the data in a repository on women's college basketball rosters, which can be found [here](https://github.com/Sports-Roster-Data/womens-college-basketball).
 
 ### Load libraries
 
@@ -134,11 +132,12 @@ years_2023 <- years_2023 |>
   mutate(pct_redshirts = (redshirts/total)*100) |>
   arrange(desc(pct_redshirts))
 
+years_2023
 ```
 
 **Question 4:** What school took in the most transfers? What school had the most players transfer out?
 
-**Summary:** Old Dominion and Glenville St. took in the most transfers at 14 each, with three people transferring out of Old Dominion and zero transferring out of Glenville St. Oregon, Arizona, and Blinn College had the most people transfer out, with nine people transferring out of Oregon and eight people each transferring out of Arizona and Blinn College. 806 schools received zero transfers, and 174 schools had zero people transfer out.
+**Summary:** Old Dominion and Glenville St. took in the most transfers at 14 each, with three people transferring out of Old Dominion and zero transferring out of Glenville St. Oregon, Arizona, and Blinn College had the most people transfer out, with nine people transferring out of Oregon and eight people each transferring out of Arizona and Blinn College. Interestingly, none of these teams had coaching changes over the offseason, which makes us question what the reason was for so many players leaving. 806 schools received zero transfers, and 174 schools had zero people transfer out.
 
 ```{r}
 #filter for only the players with something in the previous_school column
@@ -160,11 +159,12 @@ combined_transfers_2023 <- full_join(current_team_transfers_grouped, previous_sc
 
 combined_transfers_2023[is.na(combined_transfers_2023)] <- 0
 
+combined_transfers_2023
 ```
 
 **Question 5:** Which teams have the most in-state players?
 
-**Summary:** Looking again at only the rosters from the power-5 conferences, the schools with the most in-state players are Texas, Michigan State, and Minnesota, with nine players at Texas and eight players at both Michigan State and Minnesota. These results are quite interesting considering schools such as NC State, Rutgers, and Oregon State, all of which have a reputation for having a majority of in-state students, have less than three in-state players on their roster for this year. Of the 59 total teams, only 13 have five or more in-state players. This suggests that the teams from these conferences focus largely on out-of-state recruitment.
+**Summary:** Looking again at only the rosters from the power-5 conferences, the schools with the most in-state players are Texas, Michigan State, and Minnesota, with nine players at Texas and eight players at both Michigan State and Minnesota. The state of Texas produces a lot of D1 women's basketball players, as we learned from one of our previous questions, and it appears that a lot of that talent stays home. These results are quite interesting considering schools such as NC State, Rutgers, and Oregon State, all of which have a reputation for having a majority of in-state students, have less than three in-state players on their roster for this year. Of the 59 total teams, only 13 have five or more in-state players. This suggests that the teams from these conferences focus largely on out-of-state recruitment.
 
 ```{r}
 #create a dataframe with only the rows where the team state and home state match
@@ -178,4 +178,5 @@ in_state_players <- in_state_players |>
   summarize(count=n()) |>
   arrange(desc(count))
 
+in_state_players
 ```
