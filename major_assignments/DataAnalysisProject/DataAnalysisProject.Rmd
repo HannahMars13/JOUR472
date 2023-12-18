@@ -9,7 +9,9 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-**Introduction:** This data notebook was created to analyze the data in a repository on women's college basketball rosters, which can be found [here](https://github.com/Sports-Roster-Data/womens-college-basketball).
+**Introduction:** This data notebook was created to analyze women's college basketball roster data. The source repository can be found [here](https://github.com/Sports-Roster-Data/womens-college-basketball).
+
+**Link to our final memo:** <https://docs.google.com/document/d/1RSDHhu_4_-di6KTuYZHKGqLiGS9Re4saWE9bnt8klpM/edit?usp=sharing>
 
 ### Load libraries
 
@@ -44,7 +46,7 @@ years_cleaned <- old_years_cleaned |>
 
 **Question 1:** What states produce the most women's basketball players?
 
-**Summary:** As far as the total number of players over the course of the four seasons, Pennsylvania, Texas and New York have the highest numbers. We also looked at the percent change in the numbers of players between 2020 and 2023, which was interesting because Pennsylvania had a change that was less than 1%, showing how they have stayed consistently near the top of the list in terms of how many players they produce. One issue that exists with the total is that it does not account for the fact that there may be duplicate players between some of the years, but finding a way to fix this would be quite challenging. We did try to do this using the all_rosters dataframe, but as we had some issues with cleaning the season column, we found it was easier to calculate the years separately and then join them.
+**Summary:** First, we calculated the number of players from each state from each of the last four seasons, and then we combined all the datasets and created a new variable to see how it has changed over time. As far as the total number of players over the course of the four seasons, Pennsylvania, Texas and New York have the highest numbers. Looking at the percent change in the numbers of players between 2020 and 2023 was interesting because Pennsylvania had a change that was less than 1%, showing how they have stayed consistently near the top of the list in terms of how many players they produce. One issue that exists with the total is that it does not account for the fact that there may be duplicate players between some of the years, but finding a way to fix this would be quite challenging. We did try to do this using the all_rosters dataframe, but as we had some issues with cleaning the season column, we found it was easier to calculate the years separately and then join them.
 
 ```{r}
 #create player counts by state for each year
@@ -84,7 +86,7 @@ all_years_state_counts
 
 **Question 2:** Which teams in the Power 5 conferences have the tallest rosters for the current season?
 
-**Summary:** For this question, we looked at the most recent roster data and filtered for only players from the power 5 conferences: SEC, ACC, Big Ten, Big 12, and Pac-12. We then grouped by team and found the average height for each team, which showed us that Texas has the highest average height for the 2023-24 season at 73.33 inches. UCLA and Indiana are the second and third tallest teams, and Clemson is the shortest at 69.93.
+**Summary:** For this question, we looked at the most recent roster data and filtered for only players from the Power 5 conferences: SEC, ACC, Big Ten, Big 12, and Pac-12. We then grouped by team and found the average height for each team, which showed us that Texas has the highest average height for the 2023-24 season at 73.33 inches. UCLA and Indiana are the second and third tallest teams, and Clemson is the shortest at 69.93. This is quite a small window of heights since there are less than three and a half inches between the tallest and shortest teams, which indicates that height is not the main factor in what makes some of these teams better than others.
 
 ```{r}
 #filter for only the power 5 conferences
@@ -101,7 +103,7 @@ tallest_teams_2023
 
 **Question 3:** What is the breakdown of freshmen, sophomores, juniors, seniors, and grad students per each team? What percentage of each team do redshirts make up?
 
-**Summary:** To answer this question, we took the roster from the current season and grouped the different years to see the breakdown by team. We also used the redshirt column to identify the percentage of redshirt players from each team. Two teams have a lineup comprised of more than 60% redshirts, Grand Valley St. and North Carolina Central, both of which have 9 redshirts. Biola has the third highest percentage at 58.8%, but it has the highest raw number of redshirts at 10. Of the list of 932 teams, seven teams are 50% or more composed of redshirts. While this is not a particularly high number of teams, it could be interesting to explore why some teams are more than half redshirts.
+**Summary:** To answer this question, we took the roster from the current season and grouped the different years to see the breakdown by team. There are 86 teams with zero seniors, including Maryland. We also used the redshirt column to identify the percentage of redshirt players from each team. Two teams have a lineup comprised of more than 60% redshirts, Grand Valley St. and North Carolina Central, both of which have 9 redshirts. Biola has the third highest percentage at 58.8%, but it has the highest raw number of redshirts at 10. Of the list of 932 teams, seven teams are 50% or more composed of redshirts. While this is not a particularly high number of teams, it could be interesting to explore why some teams are more than half redshirts. Also, if you sort the dataset by total players, you'll notice that many of the non-Division I teams have much larger rosters. Perhaps the rules pertaining roster sizes are more lenient in Division II and III.
 
 ```{r}
 #group the dataframe by team and get a count of each year
@@ -164,7 +166,7 @@ combined_transfers_2023
 
 **Question 5:** Which teams have the most in-state players?
 
-**Summary:** Looking again at only the rosters from the Power 5 conferences, the schools with the most in-state players are Texas, Michigan State, and Minnesota, with nine players at Texas and eight players at both Michigan State and Minnesota. The state of Texas produces a lot of D1 women's basketball players, as we learned from one of our previous questions, and it appears that a lot of that talent stays home. These results are quite interesting considering schools such as NC State, Rutgers, and Oregon State, all of which have a reputation for having a majority of in-state students, have less than three in-state players on their roster for this year. Of the 59 total teams, only 13 have five or more in-state players. This suggests that the teams from these conferences focus largely on out-of-state recruitment.
+**Summary:** Looking again at only the rosters from the Power 5 conferences, the schools with the most in-state players are Texas, Michigan State and Minnesota, with nine players at Texas and eight players at both Michigan State and Minnesota. The state of Texas produces a lot of D1 women's basketball players, as we learned from one of our previous questions, and it appears that a lot of that talent stays home. These results are quite interesting considering schools such as NC State, Rutgers, and Oregon State, all of which have a reputation for having a majority of in-state students, have less than three in-state players on their roster for this year. Of the 59 total teams, only 13 have five or more in-state players. This suggests that the teams from these conferences focus largely on out-of-state recruitment.
 
 ```{r}
 #create a dataframe with only the rows where the team state and home state match
